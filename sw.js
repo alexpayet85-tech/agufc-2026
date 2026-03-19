@@ -1,6 +1,6 @@
 const CACHE = 'agufc-v1';
 const ASSETS = [
-  './agufc-stats.html',
+  './index.html',
   './manifest.json'
 ];
 
