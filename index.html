@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Aubin Grove United FC</title>
+<meta name="theme-color" content="#0f0f0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="AGUFC">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#c0001e;--red-dark:#8a0015;--red-light:#fff0f2;
+  --black:#0f0f0f;--black2:#1c1c1c;--black3:#2a2a2a;
+  --white:#fff;--off:#f4f4f4;--gray:#e4e4e4;--gray2:#ccc;
+  --text:#111;--text2:#444;--text3:#888;
+  --gold:#f5b800;--silver:#9aa0a6;--bronze:#c47722;
+  --green:#1a6b2f;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Barlow',sans-serif;background:var(--off);color:var(--text)}
+body{display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{background:var(--black);border-bottom:3px solid var(--red);flex-shrink:0}
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;padding:10px 16px}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1);flex-shrink:0}
+.hdr-club{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px}
+.hdr-badge{background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:20px}
+
+/* NAV */
+.bnav{background:var(--black);border-top:1px solid var(--black3);display:flex;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 2px 6px;gap:3px;border:none;background:transparent;cursor:pointer;color:rgba(255,255,255,0.3);border-top:2px solid transparent;transition:color .15s}
+.nbtn.on{color:var(--red);border-top-color:var(--red)}
+.nicon{font-size:16px;line-height:1}
+.nicon svg{width:16px;height:16px}
+.nlbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.page.vis{display:block}
+.pi{padding:14px}
+
+/* SHARED */
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.stitle::after{content:'';flex:1;height:1px;background:var(--gray)}
+.stitle:first-child{margin-top:0}
+.card{background:var(--white);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 10px rgba(0,0,0,0.04)}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pw{background:#eaf3de;color:#2d5a10}.pd{background:#faeeda;color:#7a4a08}.pl{background:#fcebeb;color:#9a2020}
+.pgray{background:var(--gray);color:var(--text2)}.pred{background:var(--red);color:#fff}
+.plive{background:var(--red);color:#fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* HOME */
+.hero{background:var(--black);border-radius:16px;padding:18px;margin-bottom:10px;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.hero::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:var(--red);opacity:.07}
+.hlbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:8px}
+.hrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hus{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase}
+.hopp{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:#fff;text-transform:uppercase;line-height:1.1}
+.hscore{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:#fff;line-height:1;text-align:right}
+.hscore span{color:var(--red)}
+.nextcard{background:var(--black2);border-radius:14px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--red)}
+.nlbl2{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px}
+.nopp{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#fff;text-transform:uppercase;line-height:1}
+.nmeta{font-size:12px;color:rgba(255,255,255,0.4);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}
+.sstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.sbox{background:var(--white);border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.sn{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--red);line-height:1}
+.sl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.mgame{background:var(--white);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.mgdate{font-size:11px;color:var(--text3);width:36px;flex-shrink:0;line-height:1.3;text-align:center}
+.mgdate strong{font-size:13px;color:var(--text);font-weight:700;display:block}
+.mginfo{flex:1}
+.mgopp{font-size:13px;font-weight:600;color:var(--text)}
+.mgmeta{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* SQUAD */
+.pf-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.pf{padding:5px 12px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em;border:1.5px solid var(--gray);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.pf.on{background:var(--black);color:#fff;border-color:var(--black)}
+.squad-list{display:flex;flex-direction:column;gap:7px}
+.prow{background:var(--white);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.pav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+.pnum{position:absolute;bottom:-2px;right:-4px;background:var(--black);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--white)}
+.pinfo{flex:1}
+.pname{font-size:14px;font-weight:600;color:var(--text)}
+.ppos{font-size:11px;color:var(--text3);margin-top:1px}
+.pgoals{text-align:right}
+.pgn{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--red);line-height:1}
+.pgl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+
+/* STATS */
+.ltable{background:var(--white);border-radius:14px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.lhead{display:grid;grid-template-columns:24px 1fr 26px 26px 26px 26px 36px;gap:2px;padding:9px 12px;background:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,0.45)}
+.lrow{display:grid;grid-template-columns:24px 1fr 26px 26px 26px 26px 36px;gap:2px;padding:10px 12px;align-items:center;border-bottom:1px solid var(--off)}
+.lrow:last-child{border-bottom:none}
+.lrow.us{background:#fff8f8}
+.lpos{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--text3)}
+.lpos.g{color:var(--gold)}.lpos.s{color:var(--silver)}.lpos.b{color:var(--bronze)}
+.lname{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lval{font-size:12px;color:var(--text2);text-align:center}
+.lpts{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--red);text-align:center}
+.sclist{display:flex;flex-direction:column;gap:6px}
+.scrow{background:var(--white);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border-left:3px solid transparent}
+.scrow.r1{border-left-color:var(--gold)}.scrow.r2{border-left-color:var(--silver)}.scrow.r3{border-left-color:var(--bronze)}
+.scrk{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--text3);width:20px}
+.scav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.scinfo{flex:1}
+.scname{font-size:13px;font-weight:600}
+.scmeta{font-size:11px;color:var(--text3);margin-top:1px}
+.scg{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--red)}
+
+/* CALENDAR */
+.monthlbl{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--black);padding:14px 0 8px;display:flex;align-items:center;gap:8px}
+.monthlbl::after{content:'';flex:1;height:2px;background:var(--red);opacity:.15;border-radius:1px}
+.gcard{background:var(--white);border-radius:14px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 10px rgba(0,0,0,0.04)}
+.gtop{padding:13px 15px;display:flex;align-items:center;gap:10px}
+.gtop.clickable{cursor:pointer}
+.gtop.open{background:var(--off)}
+.gdatecol{flex-shrink:0;width:38px;text-align:center}
+.gday{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--black);line-height:1}
+.gmon{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.ginfo{flex:1;min-width:0}
+.gopp{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--black);text-transform:uppercase;line-height:1}
+.gmetarow{display:flex;align-items:center;gap:5px;margin-top:4px;flex-wrap:wrap}
+.gtime{font-size:11px;color:var(--text3)}
+.gright{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.gscore{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;line-height:1}
+.gscore .r{color:var(--red)}
+.gcircle{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;flex-shrink:0}
+.cw{background:#eaf3de;color:#2d5a10}.cd{background:#faeeda;color:#7a4a08}.cl{background:#fcebeb;color:#9a2020}
+.gearbtn{width:28px;height:28px;border-radius:50%;background:var(--off);border:1.5px solid var(--gray);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
+.gearbtn:hover{border-color:var(--red);background:var(--red-light)}
+.gearbtn svg{width:13px;height:13px;color:var(--text3);transition:transform .4s}
+.gearbtn:hover svg{color:var(--red);transform:rotate(60deg)}
+.gbody{padding:0 15px 13px;border-top:1px solid var(--off)}
+.gscorers{font-size:12px;color:var(--text2);padding:10px 0 6px}
+.rtoggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0;cursor:pointer;border-top:1px solid var(--off)}
+.rtlbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.rchev{width:22px;height:22px;border-radius:50%;background:var(--off);border:1.5px solid var(--gray);display:flex;align-items:center;justify-content:center;transition:transform .3s,border-color .2s}
+.rchev svg{width:10px;height:10px;transition:transform .3s}
+.rtoggle.open .rchev{border-color:var(--red);background:var(--red-light)}
+.rtoggle.open .rchev svg{transform:rotate(180deg)}
+.rbody{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0}
+.rbody.open{max-height:800px;opacity:1}
+.rinner{padding:10px 0}
+.rrule{width:28px;height:3px;background:var(--red);border-radius:2px;margin-bottom:10px}
+.rinner p{font-size:13px;line-height:1.75;color:var(--text2);font-style:italic;margin-bottom:8px}
+.rinner p:last-child{margin-bottom:0}
+.motmbar{display:flex;align-items:center;gap:10px;padding:10px 15px;background:linear-gradient(135deg,#fffbea,#fff8d6);border-top:1px solid #f0dfa0}
+.motmstar{color:var(--gold);font-size:14px}
+.motmav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid rgba(245,184,0,.5)}
+.motmname{font-size:13px;font-weight:700;flex:1}
+.motimlbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#9a7200}
+.calbtns{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 4px}
+.calbtn{display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--off);border:1.5px solid var(--gray);border-radius:20px;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .15s}
+.calbtn:hover{border-color:var(--red);color:var(--red)}
+
+/* FINES */
+.fhero{background:var(--black);border-radius:16px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.fhero::before{content:'🤡';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:64px;opacity:.1}
+.ftag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin-bottom:6px}
+.ftitle{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#fff;text-transform:uppercase;line-height:1.2}
+.fsub{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.5}
+.frow-item{background:var(--white);border-radius:12px;margin-bottom:7px;display:flex;align-items:stretch;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.facc{width:4px;flex-shrink:0}
+.fbody{flex:1;padding:11px 13px;display:flex;align-items:center;gap:10px}
+.fnum{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:var(--text3);width:18px;flex-shrink:0}
+.ftext{flex:1;font-size:13px;color:var(--text);line-height:1.4}
+.ftext em{font-size:11px;color:var(--text3);font-style:italic;display:block;margin-top:2px}
+.famt{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;flex-shrink:0;text-align:right}
+.ffooter{background:var(--white);border-radius:14px;padding:16px;text-align:center;margin-top:6px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+
+/* COACH SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:999;display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.shandle{width:36px;height:4px;background:var(--gray);border-radius:2px;margin:12px auto 0}
+.sinner{padding:16px 18px 32px}
+.stlbl{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.closex{width:30px;height:30px;border-radius:50%;background:var(--off);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
+.ctabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.ctab{padding:6px 12px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em;border:1.5px solid var(--gray);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.ctab.on{background:var(--red);color:#fff;border-color:var(--red)}
+.csec{display:none}.csec.vis{display:block}
+.flbl{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:4px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.frow3{grid-template-columns:1fr 1fr 1fr}
+.frow1{grid-template-columns:1fr;margin-bottom:8px}
+input,select,textarea{width:100%;padding:9px 11px;border:1.5px solid var(--gray);border-radius:8px;font-size:13px;font-family:'Barlow',sans-serif;color:var(--text);background:var(--off);transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red);background:#fff}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+.btn{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;margin-top:4px}
+.btn:hover{background:var(--red-dark)}
+.btn-blk{background:var(--black)}.btn-blk:hover{background:var(--black2)}
+.btn-grn{background:var(--green)}
+
+/* PIN */
+.pinwrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0}
+.pintitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase}
+.pinsub{font-size:12px;color:var(--text3)}
+.pindots{display:flex;gap:10px}
+.pindot{width:52px;height:60px;border:2px solid var(--gray);border-radius:10px;background:var(--off);font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;text-align:center;color:var(--text);transition:border-color .15s}
+.pindot:focus{outline:none;border-color:var(--red);background:#fff}
+.pinerr{color:var(--red);font-size:12px;font-weight:600;min-height:16px;text-align:center}
+
+/* LIVE */
+.liveboard{background:var(--black);border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}
+.livescore{font-family:'Barlow Condensed',sans-serif;font-size:56px;font-weight:900;color:#fff;line-height:1}
+.livescore span{color:var(--red)}
+.liveopp{font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px}
+.livebtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.lbtn{padding:14px;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+.lus{background:var(--red);color:#fff}.lthem{background:var(--black2);color:rgba(255,255,255,0.6)}
+.pgrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pbtn{padding:6px 12px;font-size:12px;border:1.5px solid var(--gray);border-radius:20px;background:transparent;cursor:pointer;color:var(--text);transition:all .15s}
+.pbtn:hover{border-color:var(--red);color:var(--red)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .2s ease both}
+@keyframes spinG{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#sbtn.spinning svg{animation:spinG .7s linear infinite}
+
+/* NEXT GAME GEAR */
+.next-gear-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  border:1.5px solid rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:all .2s;
+}
+.next-gear-btn:hover{background:var(--red);border-color:var(--red)}
+.next-gear-btn svg{width:14px;height:14px;color:rgba(255,255,255,0.6);transition:transform .4s,color .2s}
+.next-gear-btn:hover svg{color:#fff;transform:rotate(60deg)}
+
+/* CLOWN WIG BOX */
+.clown-box{
+  background:var(--black);
+  border-radius:14px;margin-bottom:10px;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1),0 4px 12px rgba(0,0,0,0.15);
+}
+.clown-box-top{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px 10px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.clown-box-title{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:18px;font-weight:900;color:#fff;
+  text-transform:uppercase;letter-spacing:.03em;line-height:1;
+}
+.clown-box-sub{
+  font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;
+}
+.clown-box-body{
+  padding:12px 16px;
+  font-size:13px;line-height:1.7;
+  color:rgba(255,255,255,0.55);
+}
+.clown-box-body em{
+  color:rgba(255,255,255,0.35);font-style:italic;
+}
+.clown-box-footer{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:10px 16px;
+  background:rgba(192,0,30,0.15);
+  border-top:1px solid rgba(192,0,30,0.2);
+  font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.clown-dot{color:rgba(255,255,255,0.2)}
+
+/* GOAL FILTER */
+.goal-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.gof{padding:5px 14px;font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em;border:1.5px solid var(--gray);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.gof.on{background:var(--red);color:#fff;border-color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <img src="data:image/webp;base64,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" class="hdr-logo" alt="AGUFC">
+      <div>
+        <div class="hdr-club">Aubin Grove United FC</div>
+        <div class="hdr-sub">Masters Div 1 · Season 2026</div>
+      </div>
+    </div>
+    <div class="hdr-badge">Masters</div>
+  </div>
+</div>
+
+<div class="pages">
+  <div class="page vis" id="p-home"><div class="pi" id="home-c"></div></div>
+  <div class="page" id="p-squad">
+    <div class="pi">
+      <div class="pf-row">
+        <button class="pf on" onclick="setPF('All')">All</button>
+        <button class="pf" onclick="setPF('Goalkeeper')">GK</button>
+        <button class="pf" onclick="setPF('Defender')">DEF</button>
+        <button class="pf" onclick="setPF('Midfielder')">MID</button>
+        <button class="pf" onclick="setPF('Forward')">FWD</button>
+      </div>
+      <div class="squad-list" id="squad-c"></div>
+    </div>
+  </div>
+  <div class="page" id="p-stats"><div class="pi" id="stats-c"></div></div>
+  <div class="page" id="p-calendar"><div class="pi" id="cal-c"></div></div>
+  <div class="page" id="p-fines"><div class="pi" id="fines-c"></div></div>
+</div>
+
+<nav class="bnav">
+  <button class="nbtn on" onclick="goPage('home',this)"><div class="nicon">🏠</div><div class="nlbl">Home</div></button>
+  <button class="nbtn" onclick="goPage('squad',this)"><div class="nicon">👕</div><div class="nlbl">Squad</div></button>
+  <button class="nbtn" onclick="goPage('stats',this)"><div class="nicon">📊</div><div class="nlbl">Stats</div></button>
+  <button class="nbtn" onclick="goPage('calendar',this)"><div class="nicon">📅</div><div class="nlbl">Calendar</div></button>
+  <button class="nbtn" onclick="goPage('fines',this)"><div class="nicon">💸</div><div class="nlbl">Fines</div></button>
+  <button class="nbtn" id="sbtn" onclick="openCoach()">
+    <div class="nicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+    <div class="nlbl">Settings</div>
+  </button>
+</nav>
+
+<!-- COACH OVERLAY -->
+<div class="overlay" id="overlay" onclick="handleOC(event)">
+  <div class="sheet">
+    <div class="shandle"></div>
+    <div class="sinner">
+      <div id="pin-view">
+        <div class="pinwrap">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff">AGUFC</div>
+          <div class="pintitle">Coach Access</div>
+          <div class="pinsub">Enter your 4-digit PIN</div>
+          <div class="pindots">
+            <input class="pindot" id="p1" type="number" min="0" max="9" oninput="pi(this,'p2')" onkeydown="pk(event,this,null)">
+            <input class="pindot" id="p2" type="number" min="0" max="9" oninput="pi(this,'p3')" onkeydown="pk(event,this,'p1')">
+            <input class="pindot" id="p3" type="number" min="0" max="9" oninput="pi(this,'p4')" onkeydown="pk(event,this,'p2')">
+            <input class="pindot" id="p4" type="number" min="0" max="9" oninput="pi(this,null)" onkeydown="pk(event,this,'p3')">
+          </div>
+          <div class="pinerr" id="perr"></div>
+          <button class="btn" style="max-width:180px" onclick="checkPin()">Enter ⚽</button>
+        </div>
+      </div>
+      <div id="admin-view" style="display:none">
+        <div class="stlbl">⚙️ Coach Panel <button class="closex" onclick="closeCoach()">✕</button></div>
+        <div class="ctabs">
+          <button class="ctab on" onclick="setCT('gameday')">Game Day</button>
+          <button class="ctab" onclick="setCT('schedule')">Schedule</button>
+          <button class="ctab" onclick="setCT('players')">Players</button>
+          <button class="ctab" onclick="setCT('guest')">👤 Guest</button>
+          <button class="ctab" onclick="setCT('reset')">↩ Reset</button>
+        </div>
+        <div class="csec vis" id="ct-gameday">
+          <div class="frow1"><div><div class="flbl">Select game</div><select id="gd-sel" onchange="loadGD(this.value)"></select></div></div>
+          <div id="gd-panel"></div>
+        </div>
+        <div class="csec" id="ct-schedule">
+          <div class="frow1"><div><div class="flbl">Select fixture</div><select id="sc-sel" onchange="loadSC(this.value)"></select></div></div>
+          <div id="sc-panel"></div>
+        </div>
+        <div class="csec" id="ct-players">
+          <div class="frow"><div><div class="flbl">Name</div><input id="np-name" placeholder="e.g. Jordan Smith"></div><div><div class="flbl">Jersey #</div><input id="np-num" type="number" placeholder="7"></div></div>
+          <div class="frow1"><div><div class="flbl">Position</div><select id="np-pos"><option>Goalkeeper</option><option>Defender</option><option selected>Midfielder</option><option>Forward</option></select></div></div>
+          <button class="btn" onclick="addPlayer()">Add Player</button>
+        </div>
+        <div class="csec" id="ct-guest">
+          <div style="background:var(--off);border-radius:12px;padding:14px;margin-bottom:14px;border-left:3px solid #d97706">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;color:#d97706;margin-bottom:4px">👤 Guest Players</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5">Short on numbers? Add a player from another team. They show on squad with a Guest badge and count toward the Golden Boot.</div>
+          </div>
+          <div class="frow">
+            <div><div class="flbl">Name</div><input id="gp-name" placeholder="e.g. John Smith"></div>
+            <div><div class="flbl">Position</div><select id="gp-pos"><option>Goalkeeper</option><option>Defender</option><option selected>Midfielder</option><option>Forward</option></select></div>
+          </div>
+          <div class="frow1">
+            <div><div class="flbl">From team (optional)</div><input id="gp-team" placeholder="e.g. AGUFC U18s"></div>
+          </div>
+          <button class="btn" style="background:#d97706;margin-bottom:14px" onclick="addGuest()">Add Guest Player</button>
+          <div style="height:1px;background:var(--gray);margin-bottom:14px"></div>
+          <p class="flbl">Current guests this season</p>
+          <div id="guest-list" style="margin-top:8px"></div>
+        </div>
+        <div class="csec" id="ct-reset">
+          <div style="background:var(--off);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid var(--red)">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:4px">⚠️ Danger Zone</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.5">These actions cannot be undone. Use with care.</div>
+          </div>
+          <div id="reset-game-wrap">
+            <p class="flbl">Remove last goal from a game</p>
+            <select id="reset-game-sel" style="margin-bottom:8px"></select>
+            <div id="reset-scorers-list" style="margin-bottom:8px"></div>
+          </div>
+          <div style="height:1px;background:var(--gray);margin:14px 0"></div>
+          <p class="flbl">Reset a game score to 0–0</p>
+          <select id="reset-score-sel" style="margin-bottom:8px"></select>
+          <button class="btn" style="background:#d97706;margin-bottom:14px" onclick="resetScore()">Reset Score to 0–0</button>
+          <div style="height:1px;background:var(--gray);margin-bottom:14px"></div>
+          <p class="flbl">Change game status</p>
+          <div class="frow" style="margin-bottom:8px">
+            <div><select id="status-game-sel"></select></div>
+            <div><select id="status-new"><option value="upcoming">Upcoming</option><option value="live">Live 🔴</option><option value="completed">Completed</option></select></div>
+          </div>
+          <button class="btn btn-blk" onclick="changeStatus()">Update Status</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLS=['#c0001e','#1a3c6b','#1a6b2f','#7c3aed','#d97706','#0891b2','#444','#db2777','#059669','#ea580c','#854f0b','#185fa5','#be185d','#0369a1','#4d7c0f','#b45309','#6d28d9','#0f766e','#c2410c','#1d4ed8','#15803d','#a21caf','#0e7490'];
+const MS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MSS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function ini(n){return n.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}
+function col(i){return COLS[i%COLS.length]}
+function fp2(p){return{Goalkeeper:'GK',Defender:'DEF',Midfielder:'MID',Forward:'FWD'}[p]||p}
+function fd(d){if(!d)return'TBC';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})}
+
+let players=[
+  {name:'Ian Warren',number:1,position:'Goalkeeper'},
+  {name:'Darragh Carroll',number:2,position:'Defender'},
+  {name:'Darren Quinn',number:3,position:'Defender'},
+  {name:'Kyle Beacom',number:4,position:'Defender'},
+  {name:'Karl Griffiths',number:5,position:'Midfielder'},
+  {name:'Greig Christie',number:6,position:'Defender'},
+  {name:'Jason Kingdon',number:7,position:'Midfielder'},
+  {name:'Chris Vincent',number:8,position:'Midfielder'},
+  {name:'Jonathan Jones',number:9,position:'Defender'},
+  {name:'Brad North',number:10,position:'Forward'},
+  {name:'Alex Payet',number:11,position:'Midfielder'},
+  {name:'Colin Henderson',number:13,position:'Midfielder'},
+  {name:'Kelvin Darby',number:14,position:'Defender'},
+  {name:'Jim McKellar',number:15,position:'Midfielder'},
+  {name:'Paulo Coelho',number:17,position:'Midfielder'},
+  {name:'Jonathan Tacy',number:18,position:'Defender'},
+  {name:'Matt Mannix',number:19,position:'Midfielder'},
+  {name:'Dheyaa',number:20,position:'Midfielder'},
+  {name:'Darren Mathurine',number:21,position:'Midfielder'},
+  {name:'Greg Sharland',number:23,position:'Forward'},
+  {name:'Will Kirkpatrick',number:32,position:'Defender'},
+  {name:'Alan Matteucci',number:33,position:'Goalkeeper'},
+  {name:'Jamie Leary',number:65,position:'Forward'}
+].map((p,i)=>({...p,idx:i,goals:0}));
+
+let fixtures=[
+  {id:0,date:'2026-03-15',opponent:'Gosnells',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'Friendly',status:'completed',score_us:7,score_them:1,scorers:['Chris Vincent','Brad North','Brad North','Greig Christie','Greig Christie','Greig Christie','Greig Christie'],motm:'Greig Christie',report:`Round 1. Masters Div 1. The knees are strapped, the Deep Heat has been applied, and Aubin Grove United are ready for war.
+
+Conditions were brutal - scorching heat, a pitch that looked like it was last mowed during the Keating government, and at least three players who swore they had been training. Sure you have mate.
+
+First 20 minutes were a bit shaky - AG looked like a group of blokes who had only just met each other at a physio clinic. But then Greig Christie stepped up and buried a beautiful shot bottom left. Just like that, the fog lifted.
+
+From there AG found their riddim. Passes connecting. Runs being made. Someone even did a stepover - unnecessary and we loved it.
+
+Second half, Gosnells ran out of gas. Their main tactic became asking the ref how long was left. Brad North helped himself to a brace and Greig added three more.
+
+Final score: 7-1. Bragging rights secured. Ibuprofen consumed. Same time, same Deep Heat next week. 💪🔴⚫`},
+  {id:-1,date:'2026-03-29',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'Friendly',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:1,date:'2026-04-06',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:2,date:'2026-04-13',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:3,date:'2026-04-20',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:4,date:'2026-04-27',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:5,date:'2026-05-04',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:6,date:'2026-05-11',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:7,date:'2026-05-18',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:8,date:'2026-05-25',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:9,date:'2026-06-01',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:10,date:'2026-06-08',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:11,date:'2026-06-15',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:12,date:'2026-06-22',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:13,date:'2026-06-29',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:14,date:'2026-07-06',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:15,date:'2026-07-13',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:16,date:'2026-07-20',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:17,date:'2026-07-27',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:18,date:'2026-08-03',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:19,date:'2026-08-10',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:20,date:'2026-08-17',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:21,date:'2026-08-24',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:22,date:'2026-08-31',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:23,date:'2026-09-07',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:24,date:'2026-09-14',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''},
+  {id:25,date:'2026-09-21',opponent:'Game',time:'08:00',venue:'Aubin Grove Sports Facility',home_away:'Home',type:'League',status:'upcoming',score_us:null,score_them:null,scorers:[],motm:null,report:''}
+];
+
+let standings={League:[{name:'Aubin Grove United',p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,us:true}],Cup:[]};
+
+function recompute(){
+  players.forEach(p=>p.goals=0);
+  fixtures.forEach(g=>{
+    if(g.status==='completed'){
+      (g.scorers||[]).forEach(name=>{
+        const p=players.find(x=>x.name===name);
+        if(p)p.goals++;
+      });
+    }
+  });
+}
+recompute();
+
+// NAV
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('vis'));
+  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('vis');
+  btn.classList.add('on');
+  ({home:renderHome,squad:renderSquad,stats:renderStats,calendar:renderCal,fines:renderFines})[id]?.();
+}
+
+// HOME
+function renderHome(){
+  const completed=fixtures.filter(g=>g.status==='completed');
+  const live=fixtures.find(g=>g.status==='live');
+  const last=completed[completed.length-1];
+  const upcoming=fixtures.filter(g=>g.status==='upcoming').slice(0,4);
+  const lg=fixtures.filter(g=>g.type==='League'&&g.status==='completed');
+  const w=lg.filter(g=>g.score_us>g.score_them).length;
+  const d2=lg.filter(g=>g.score_us===g.score_them).length;
+  const gf=players.reduce((s,p)=>s+p.goals,0);
+  const pts=w*3+d2;
+  let h='';
+
+  // LIVE GAME — always show first if active
+  if(live){
+    h+=`<div class="hero anim" style="border:2px solid var(--red)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="pill plive">🔴 Live</span>
+        <span style="font-size:11px;color:rgba(255,255,255,0.5)">${live.type} · ${live.home_away}</span>
+      </div>
+      <div class="hrow">
+        <div class="hteams">
+          <div class="hus">Aubin Grove United</div>
+          <div class="hopp">vs ${live.opponent}</div>
+          <div style="margin-top:6px;font-size:11px;color:rgba(255,255,255,0.4)">📍 ${live.venue}</div>
+        </div>
+        <div>
+          <div class="hscore"><span>${live.score_us||0}</span>–${live.score_them||0}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.4);text-align:right;margin-top:4px">In progress</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // LAST RESULT
+  if(last){
+    const res=last.score_us>last.score_them?'W':last.score_us===last.score_them?'D':'L';
+    const rw={W:'pw',D:'pd',L:'pl'}[res];
+    const rwd={W:'Victory 🔥',D:'Draw',L:'Defeat'}[res];
+    h+=`<div class="hero anim"><div class="hlbl">${live?'Previous Result':'Last Result'}</div><div class="hrow"><div class="hteams"><div class="hus">Aubin Grove</div><div class="hopp">vs ${last.opponent}</div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill ${rw}">${rwd}</span><span class="pill pgray">${last.type}</span><span style="font-size:11px;color:rgba(255,255,255,0.4)">${fd(last.date)}</span></div></div><div class="hscore"><span>${last.score_us}</span>–${last.score_them}</div></div></div>`;
+  }
+
+  // NEXT GAME
+  if(!live){
+    const nxt=fixtures.find(g=>g.status==='upcoming');
+    if(nxt){
+      h+=`<div class="nextcard anim">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+          <div style="flex:1">
+            <div class="nlbl2">⚡ Next Game</div>
+            <div class="nopp">vs ${nxt.opponent}</div>
+            <div class="nmeta">
+              <span>📅 ${fd(nxt.date)}</span>
+              <span>⏰ ${nxt.time}</span>
+              <span>📍 ${nxt.venue}</span>
+              <span class="pill pgray" style="font-size:9px">${nxt.home_away}</span>
+              <span class="pill pgray" style="font-size:9px">${nxt.type}</span>
+            </div>
+          </div>
+          <button class="next-gear-btn" onclick="openCoachGame(${nxt.id})" title="Edit this fixture">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+    }
+  }
+
+  // SEASON STATS
+  h+=`<div class="sstrip anim">
+    <div class="sbox"><div class="sn">${completed.length}</div><div class="sl">Played</div></div>
+    <div class="sbox"><div class="sn">${gf}</div><div class="sl">Goals</div></div>
+    <div class="sbox"><div class="sn" style="color:${lg.length?'var(--red)':'var(--text3)'}">${lg.length?pts:'–'}</div><div class="sl">Points</div></div>
+  </div>`;
+
+  // UPCOMING GAMES
+  if(upcoming.length){
+    h+='<p class="stitle">Coming Up</p>';
+    upcoming.forEach((g,i)=>{
+      const dt=new Date(g.date+'T00:00:00');
+      h+=`<div class="mgame anim" style="animation-delay:${i*0.05}s">
+        <div class="mgdate"><strong>${dt.getDate()}</strong>${MSS[dt.getMonth()]}</div>
+        <div class="mginfo">
+          <div class="mgopp">vs ${g.opponent}</div>
+          <div class="mgmeta">${g.time} · ${g.home_away}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="pill pgray" style="font-size:9px">${g.type}</span>
+          <span class="pill pgray" style="font-size:9px">${g.home_away}</span>
+        </div>
+      </div>`;
+    });
+  }
+  document.getElementById('home-c').innerHTML=h;
+}
+
+// SQUAD
+let apf='All';
+function setPF(f){
+  apf=f;
+  document.querySelectorAll('.pf').forEach(b=>b.classList.toggle('on',b.textContent.trim()===f||(f==='All'&&b.textContent.trim()==='All')));
+  renderSquad();
+}
+function renderSquad(){
+  const fl=apf==='All'?players:players.filter(p=>p.position===apf);
+  const sr=[...fl].sort((a,b)=>a.number-b.number);
+  document.getElementById('squad-c').innerHTML=sr.map((p,i)=>`
+    <div class="prow anim" style="animation-delay:${i*0.03}s${p.guest?';border-left:3px solid #d97706':''}">
+      <div class="pav" style="background:${p.guest?'#d97706':col(p.idx)}">${ini(p.name)}<div class="pnum">${p.guest?'G':p.number}</div></div>
+      <div class="pinfo">
+        <div class="pname" style="display:flex;align-items:center;gap:6px">
+          ${p.name}
+          ${p.guest?`<span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:#fff3e0;color:#d97706;padding:2px 6px;border-radius:10px">Guest</span>`:''}
+        </div>
+        <div class="ppos">${fp2(p.position)}${p.guest?' · '+p.guestTeam:''}</div>
+      </div>
+      <div class="pgoals"><div class="pgn">${p.goals}</div><div class="pgl">goals</div></div>
+    </div>`).join('');
+}
+
+// STATS
+function renderStats(){
+  const srt=[...players].filter(p=>p.goals>0).sort((a,b)=>b.goals-a.goals);
+  const gf=players.reduce((s,p)=>s+p.goals,0);
+  const ga=fixtures.filter(g=>g.status==='completed').reduce((s,g)=>s+(g.score_them||0),0);
+  const played=fixtures.filter(g=>g.status==='completed').length;
+  const w=fixtures.filter(g=>g.status==='completed'&&g.score_us>g.score_them).length;
+  let h='<p class="stitle">League Ladder</p>';
+  const lr=[...standings.League].sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga));
+  if(lr.length){
+    h+=`<div class="ltable"><div class="lhead"><span>#</span><span>Team</span><span>P</span><span>W</span><span>D</span><span>L</span><span>Pts</span></div>${lr.map((r,i)=>{const pc=i===0?'g':i===1?'s':i===2?'b':'';return`<div class="lrow${r.us?' us':''}"><span class="lpos ${pc}">${i+1}</span><span class="lname">${r.name}${r.us?' 🔴':''}</span><span class="lval">${r.p}</span><span class="lval">${r.w}</span><span class="lval">${r.d}</span><span class="lval">${r.l}</span><span class="lpts">${r.pts}</span></div>`;}).join('')}</div>`;
+  } else {
+    h+='<div class="card" style="padding:1.5rem;text-align:center;color:var(--text3);font-size:13px">League schedule coming soon 🔴⚫</div>';
+  }
+  h+='<p class="stitle">Golden Boot 🥾</p>';
+  h+=`<div class="goal-filter" id="goal-filter">
+    <button class="gof on" onclick="setGoalFilter('all',this)">All</button>
+    <button class="gof" onclick="setGoalFilter('League',this)">League</button>
+    <button class="gof" onclick="setGoalFilter('Cup',this)">Cup</button>
+    <button class="gof" onclick="setGoalFilter('Friendly',this)">Friendly</button>
+  </div>
+  <div id="golden-boot-list"></div>`;
+  h+=`<p class="stitle">Season Overview</p><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px"><div class="sbox"><div class="sn">${gf}</div><div class="sl">Goals scored</div></div><div class="sbox"><div class="sn">${ga}</div><div class="sl">Conceded</div></div><div class="sbox"><div class="sn">${played?Math.round(w/played*100):0}%</div><div class="sl">Win rate</div></div><div class="sbox"><div class="sn">${played?(gf/played).toFixed(1):'–'}</div><div class="sl">Goals/game</div></div></div>`;
+  document.getElementById('stats-c').innerHTML=h;
+  // Render golden boot with current filter
+  renderGoldenBoot();
+  // Restore active filter button state
+  document.querySelectorAll('.gof').forEach((b,i)=>{
+    const filters=['all','League','Cup','Friendly'];
+    b.classList.toggle('on', filters[i]===activeGoalFilter);
+  });
+}
+
+// CALENDAR
+function renderCal(){
+  const byM={};
+  fixtures.forEach(g=>{
+    const dt=new Date(g.date+'T00:00:00');
+    const k=dt.getFullYear()+'-'+dt.getMonth();
+    if(!byM[k])byM[k]={m:dt.getMonth(),y:dt.getFullYear(),games:[]};
+    byM[k].games.push(g);
+  });
+  let h='';
+  Object.values(byM).forEach(mb=>{
+    h+=`<div><div class="monthlbl">${MS[mb.m]} ${mb.y}</div>${mb.games.map(g=>buildGCard(g)).join('')}</div>`;
+  });
+  document.getElementById('cal-c').innerHTML=h;
+}
+
+function gearSVG(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`}
+function chevSVG(){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`}
+
+function buildGCard(g){
+  const dt=new Date(g.date+'T00:00:00');
+  const day=dt.getDate();
+  const mon=MSS[dt.getMonth()];
+  const done=g.status==='completed';
+  const live=g.status==='live';
+  const hasR=g.report&&g.report.trim().length>0;
+  const uniq={};(g.scorers||[]).forEach(s=>{uniq[s]=(uniq[s]||0)+1});
+  const scStr=Object.entries(uniq).map(([n,c])=>c>1?`${n} (${c})`:n).join(', ');
+  const mp=g.motm?players.find(x=>x.name===g.motm):null;
+  const mbg=mp?col(mp.idx):'#c0001e';
+  let badge='',scoreH='',cardBorder='';
+  if(done){
+    const res=g.score_us>g.score_them?'W':g.score_us===g.score_them?'D':'L';
+    const rc={W:'cw',D:'cd',L:'cl'}[res];
+    badge=`<div class="gcircle ${rc}">${res}</div>`;
+    scoreH=`<div class="gscore"><span class="r">${g.score_us}</span><span style="font-size:13px;color:var(--gray2);margin:0 1px">–</span>${g.score_them}</div>`;
+  } else if(live){
+    badge=`<span class="pill plive" style="font-size:10px">🔴 Live</span>`;
+    scoreH=`<div class="gscore"><span class="r">${g.score_us||0}</span><span style="font-size:13px;color:var(--gray2);margin:0 1px">–</span>${g.score_them||0}</div>`;
+    cardBorder='border:2px solid var(--red);';
+  } else {
+    // Upcoming — show nothing for score, just a subtle status
+    badge=`<span class="pill pgray" style="font-size:9px">Upcoming</span>`;
+  }
+  const gear=`<button class="gearbtn" onclick="event.stopPropagation();openCoachGame(${g.id})" title="Coach">${gearSVG()}</button>`;
+  const icsBtn=!done?`<div class="calbtns"><button class="calbtn" onclick="dlICS(${g.id})">📅 Add to calendar</button></div>`:'';
+  const bodyH=(done&&(scStr||hasR))?`<div class="gbody">${scStr?`<div class="gscorers">⚽ ${scStr}</div>`:''}${hasR?`<div class="rtoggle" onclick="toggleR(this)"><span class="rtlbl">Match Report</span><div class="rchev">${chevSVG()}</div></div><div class="rbody"><div class="rinner"><div class="rrule"></div>${g.report.split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')}</div></div>`:''}</div>`:((!done&&!live)?`<div class="gbody">${icsBtn}</div>`:'');
+  const motmH=g.motm?`<div class="motmbar"><span class="motmstar">★</span><div class="motmav" style="background:${mbg}">${ini(g.motm)}</div><div class="motmname">${g.motm}</div><div class="motimlbl">Man of the Match</div></div>`:'';
+  return `<div class="gcard anim" id="gc${g.id}" style="${cardBorder}"><div class="gtop"><div class="gdatecol"><div class="gday">${day}</div><div class="gmon">${mon}</div></div><div class="ginfo"><div class="gopp">${g.opponent}</div><div class="gmetarow"><span class="gtime">${g.time}</span><span class="pill pgray" style="font-size:9px;padding:1px 6px">${g.type}</span><span class="pill pgray" style="font-size:9px;padding:1px 6px">${g.home_away}</span>${live?'<span class="pill plive" style="font-size:9px;padding:1px 6px">Live</span>':done?'<span class="pill pgray" style="font-size:9px;padding:1px 6px;background:#eaf3de;color:#2d5a10">Done</span>':''}</div></div><div class="gright">${scoreH}${badge}${gear}</div></div>${bodyH}${motmH}</div>`;
+}
+
+function toggleR(btn){
+  const body=btn.nextElementSibling;
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ICS
+function dlICS(id){
+  const g=fixtures.find(f=>f.id===id);if(!g)return;
+  const dt=new Date(g.date+'T'+g.time+':00');
+  const end=new Date(dt.getTime()+90*60000);
+  const fmt=d=>d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const ics=`BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:${fmt(dt)}
+DTEND:${fmt(end)}
+SUMMARY:AGUFC vs ${g.opponent}
+LOCATION:${g.venue}
+DESCRIPTION:${g.type} - ${g.home_away}
+END:VEVENT
+END:VCALENDAR`;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download=`AGUFC-vs-${g.opponent}.ics`;a.click();
+}
+
+// FINES
+function renderFines(){
+  const fines=[
+    {n:1,text:'Nutmegs',sub:'Games, training and warm ups — not whilst stretching',amt:2,c:'#1a3c6b'},
+    {n:2,text:'Forgotten kit items',sub:'Shin pads, warm up shirts, boots etc — each item',amt:2,c:'#1a3c6b'},
+    {n:3,text:'Not answering a poll',sub:'Gaffer has to follow up — embarrassing for everyone',amt:2,c:'#c0001e'},
+    {n:4,text:'Miss training',sub:'No message or filling out poll = additional $2 on top',amt:2,c:'#c0001e'},
+    {n:5,text:'No club polo on game day',sub:'You know the rules. Wear the shirt.',amt:2,c:'#1a3c6b'},
+    {n:6,text:'Own goal',sub:"We don't talk about it. But we do fine it.",amt:2,c:'#c0001e'},
+    {n:7,text:'Missed or saved penalty',sub:'Stepped up. Bottled it.',amt:2,c:'#d97706'},
+    {n:8,text:'Late on game day',sub:'No proper excuse. You know when we kick off.',amt:2,c:'#1a3c6b'},
+    {n:9,text:'Yellow card',sub:"One more and you're in deep.",amt:2,c:'#d97706'},
+    {n:10,text:'Red card',sub:"Single-handedly ruined everyone's Saturday. Cheers.",amt:5,c:'#c0001e'},
+    {n:11,text:'Red card for dissent',sub:"Arguing with the ref. He's 65 and doing his best.",amt:10,c:'#c0001e'},
+    {n:12,text:'Asking for bank details',sub:"It's in the group chat. Has been since April.",amt:2,c:'#1a3c6b'},
+    {n:13,text:'Deleting a message',sub:'What did you say? We will never know.',amt:2,c:'#1a3c6b'},
+    {n:14,text:'Giving away a penalty',sub:"Handball, push, trip — doesn't matter. Pay up.",amt:2,c:'#d97706'},
+    {n:15,text:'Wearing rival club gear',sub:'Sporting other local football teams gear. Disgraceful.',amt:2,c:'#c0001e'},
+    {n:16,text:'Asking home/away or kick-off time',sub:"It's been in the chat for two weeks, Dave.",amt:2,c:'#1a3c6b'},
+    {n:17,text:'Forgetting the clown wig 🤡',sub:'Voted in. Mandatory. No exceptions.',amt:5,c:'#7c3aed'},
+  ];
+  let h=`<div class="fhero anim"><div class="ftag">⚖️ Season Fines List 2026</div><div class="ftitle">The Law of<br>the Land</div><div class="fsub">Keep the standards up. Have a laugh.<br>Earn some beers by season end. 🍻</div></div>`;
+  // Clown wig info box
+  h+=`<div class="clown-box anim">
+    <div class="clown-box-top">
+      <span style="font-size:28px">🤡</span>
+      <div>
+        <div class="clown-box-title">The Clown Wig Vote</div>
+        <div class="clown-box-sub">Weekly · Voted by the group</div>
+      </div>
+    </div>
+    <div class="clown-box-body">Each week we vote via poll for someone to wear the clown wig at training and on game day — missed sitter, said something stupid, argued with teammates, or any other clown-worthy moment.<br><br><em>As most of you know, I just keep track of what's owed — not what the fine was for.</em></div>
+    <div class="clown-box-footer">
+      <span>Wear it at training</span>
+      <span class="clown-dot">·</span>
+      <span>Wear it on game day</span>
+      <span class="clown-dot">·</span>
+      <span style="color:var(--red);font-weight:700">$5 if forgotten</span>
+    </div>
+  </div>`;
+
+  fines.forEach((f,i)=>{h+=`<div class="frow-item anim" style="animation-delay:${i*0.03}s"><div class="facc" style="background:${f.c}"></div><div class="fbody"><div class="fnum">${f.n}</div><div class="ftext">${f.text}<em>${f.sub}</em></div><div class="famt" style="color:${f.c}">$${f.amt}</div></div></div>`;});
+  h+=`<div style="height:20px"></div>`;
+  document.getElementById('fines-c').innerHTML=h;
+}
+
+// COACH PIN
+const PIN='1444';
+let unlocked=false;
+let tgtGame=null;
+
+function openCoach(){tgtGame=null;showOverlay();}
+function openCoachGame(id){tgtGame=id;showOverlay();}
+function showOverlay(){
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sbtn').classList.add('spinning');
+  if(!unlocked)showPin();else showAdmin();
+}
+function closeCoach(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sbtn').classList.remove('spinning');
+  tgtGame=null;
+}
+function handleOC(e){if(e.target===document.getElementById('overlay'))closeCoach();}
+function showPin(){
+  document.getElementById('pin-view').style.display='block';
+  document.getElementById('admin-view').style.display='none';
+  ['p1','p2','p3','p4'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.style.borderColor=''}});
+  document.getElementById('perr').textContent='';
+  setTimeout(()=>document.getElementById('p1')?.focus(),300);
+}
+function pi(el,nxt){
+  el.value=el.value.toString().slice(-1);
+  if(el.value&&nxt)document.getElementById(nxt)?.focus();
+  if(!nxt&&el.value)checkPin();
+}
+function pk(e,el,prev){
+  if(e.key==='Backspace'&&!el.value&&prev){const p=document.getElementById(prev);if(p){p.value='';p.focus();}}
+}
+function checkPin(){
+  const pin=['p1','p2','p3','p4'].map(id=>document.getElementById(id).value).join('');
+  if(pin===PIN){unlocked=true;showAdmin();}
+  else{
+    document.getElementById('perr').textContent='Wrong PIN 🔒';
+    ['p1','p2','p3','p4'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.borderColor='var(--red)'});
+    setTimeout(()=>{['p1','p2','p3','p4'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.style.borderColor=''}});document.getElementById('perr').textContent='';setTimeout(()=>document.getElementById('p1')?.focus(),100);},1000);
+  }
+}
+function showAdmin(){
+  document.getElementById('pin-view').style.display='none';
+  document.getElementById('admin-view').style.display='block';
+  populateSels();
+  if(tgtGame!=null){
+    const g=fixtures.find(f=>f.id===tgtGame||f.id==tgtGame);
+    // Open Schedule tab for upcoming, Game Day for live/completed
+    if(g&&g.status==='upcoming'){
+      setCT('schedule');
+      document.getElementById('sc-sel').value=tgtGame;
+      loadSC(tgtGame);
+    } else {
+      setCT('gameday');
+      document.getElementById('gd-sel').value=tgtGame;
+      loadGD(tgtGame);
+    }
+  }
+}
+function setCT(t){
+  document.querySelectorAll('.ctab').forEach((b,i)=>b.classList.toggle('on',['gameday','schedule','players','guest','reset'][i]===t));
+  if(t==='reset')populateResetSels();
+  if(t==='guest')renderGuestList();
+  document.querySelectorAll('.csec').forEach(s=>s.classList.remove('vis'));
+  document.getElementById('ct-'+t).classList.add('vis');
+}
+function populateSels(){
+  const opts=fixtures.map(g=>`<option value="${g.id}">${fd(g.date)} — vs ${g.opponent} (${g.status})</option>`).join('');
+  ['gd-sel','sc-sel'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+}
+
+// GAME DAY
+function loadGD(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  const pOpts=players.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  document.getElementById('gd-panel').innerHTML=`
+    <div class="liveboard">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px">vs ${g.opponent}</div>
+      <div class="livescore" id="ls${g.id}"><span>${g.score_us||0}</span> – ${g.score_them||0}</div>
+      <div class="liveopp">${fd(g.date)} · ${g.type}</div>
+    </div>
+    <div class="livebtns">
+      <button class="lbtn lus" onclick="goalUs(${g.id})">⚽ We Scored</button>
+      <button class="lbtn lthem" onclick="goalThem(${g.id})">😬 They Scored</button>
+    </div>
+    <div id="sp${g.id}" style="display:none;margin-bottom:12px">
+      <p class="flbl">Who scored?</p>
+      <div class="pgrid">${players.map(p=>`<button class="pbtn" style="${p.guest?'border-color:#d97706;color:#d97706':''}" onclick="assignG(${g.id},'${p.name}')">${p.name}${p.guest?' 👤':''}</button>`).join('')}</div>
+    </div>
+    <div class="frow">
+      <div><div class="flbl">Status</div><select id="gs${g.id}"><option value="upcoming"${g.status==='upcoming'?' selected':''}>Upcoming</option><option value="live"${g.status==='live'?' selected':''}>Live 🔴</option><option value="completed"${g.status==='completed'?' selected':''}>Completed</option></select></div>
+      <div><div class="flbl">MOTM</div><select id="gm${g.id}"><option value="">— None —</option>${pOpts}</select></div>
+    </div>
+    <div class="frow1"><div><div class="flbl">Match report 🎙️</div><textarea id="gr${g.id}" rows="4">${g.report||''}</textarea></div></div>
+    <button class="btn" onclick="saveG(${g.id})">Save ✓</button>
+    <button class="btn btn-blk" style="margin-top:6px" onclick="closeCoach()">Done</button>`;
+  if(g.motm)setTimeout(()=>{const s=document.getElementById('gm'+g.id);if(s)s.value=g.motm;},50);
+}
+
+function goalUs(id){document.getElementById('sp'+id).style.display='block';}
+function goalThem(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  g.score_them=(g.score_them||0)+1;g.status='live';
+  const ls=document.getElementById('ls'+id);
+  if(ls)ls.innerHTML=`<span>${g.score_us||0}</span> – ${g.score_them}`;
+}
+function assignG(id,name){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  g.score_us=(g.score_us||0)+1;
+  g.scorers=g.scorers||[];g.scorers.push(name);
+  g.status='live';
+  const p=players.find(x=>x.name===name);if(p)p.goals++;
+  document.getElementById('sp'+id).style.display='none';
+  const ls=document.getElementById('ls'+id);
+  if(ls)ls.innerHTML=`<span>${g.score_us}</span> – ${g.score_them||0}`;
+  refreshCard(id);
+}
+function saveG(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  g.status=document.getElementById('gs'+id).value;
+  g.motm=document.getElementById('gm'+id).value||null;
+  g.report=document.getElementById('gr'+id).value;
+  recompute();renderCal();renderHome();renderStats();renderSquad();
+  renderGoldenBoot();
+  alert('Saved! ✅');
+}
+function refreshCard(id){
+  const g=fixtures.find(f=>f.id===id);if(!g)return;
+  const el=document.getElementById('gc'+id);
+  if(el){const tmp=document.createElement('div');tmp.innerHTML=buildGCard(g);el.replaceWith(tmp.firstElementChild);}
+}
+
+// SCHEDULE EDIT
+function loadSC(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  document.getElementById('sc-panel').innerHTML=`
+    <div class="frow"><div><div class="flbl">Opponent</div><input id="so${id}" value="${g.opponent}"></div><div><div class="flbl">Date</div><input id="sd${id}" type="date" value="${g.date}"></div></div>
+    <div class="frow"><div><div class="flbl">Time</div><input id="st${id}" value="${g.time}"></div><div><div class="flbl">Home/Away</div><select id="sh${id}"><option${g.home_away==='Home'?' selected':''}>Home</option><option${g.home_away==='Away'?' selected':''}>Away</option></select></div></div>
+    <div class="frow"><div><div class="flbl">Type</div><select id="sy${id}"><option${g.type==='League'?' selected':''}>League</option><option${g.type==='Friendly'?' selected':''}>Friendly</option><option${g.type==='Cup'?' selected':''}>Cup</option></select></div><div><div class="flbl">Venue</div><input id="sv${id}" value="${g.venue}"></div></div>
+    <button class="btn" onclick="saveSC(${id})">Save Fixture ✓</button>`;
+}
+function saveSC(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  g.opponent=document.getElementById('so'+id).value;
+  g.date=document.getElementById('sd'+id).value;
+  g.time=document.getElementById('st'+id).value;
+  g.home_away=document.getElementById('sh'+id).value;
+  g.type=document.getElementById('sy'+id).value;
+  g.venue=document.getElementById('sv'+id).value;
+  renderCal();renderHome();alert('Fixture updated! ✅');
+}
+
+
+// ADD PLAYER
+function addPlayer(){
+  const name=document.getElementById('np-name').value.trim();
+  if(!name)return alert('Enter a name!');
+  players.push({name,number:parseInt(document.getElementById('np-num').value)||0,position:document.getElementById('np-pos').value,idx:players.length,goals:0});
+  document.getElementById('np-name').value='';document.getElementById('np-num').value='';
+  renderSquad();alert(name+' added ✅');
+}
+
+// GOLDEN BOOT FILTER
+let activeGoalFilter='all';
+
+function setGoalFilter(f, btn){
+  activeGoalFilter=f;
+  document.querySelectorAll('.gof').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderGoldenBoot();
+}
+
+function getGoalsByType(type){
+  // Build per-player goal counts filtered by game type
+  const counts={};
+  players.forEach(p=>counts[p.name]=0);
+  fixtures.forEach(g=>{
+    if(g.status!=='completed')return;
+    if(type!=='all'&&g.type!==type)return;
+    (g.scorers||[]).forEach(name=>{
+      if(counts[name]===undefined)counts[name]=0;
+      counts[name]++;
+    });
+  });
+  return counts;
+}
+
+function renderGoldenBoot(){
+  const el=document.getElementById('golden-boot-list');
+  if(!el)return;
+  const counts=getGoalsByType(activeGoalFilter);
+  const sorted=players
+    .map(p=>({...p,filteredGoals:counts[p.name]||0}))
+    .filter(p=>p.filteredGoals>0)
+    .sort((a,b)=>b.filteredGoals-a.filteredGoals);
+  if(!sorted.length){
+    el.innerHTML='<div class="card" style="padding:1.5rem;text-align:center;color:var(--text3);font-size:13px">No goals yet — get on the scoresheet! 👀</div>';
+    return;
+  }
+  el.innerHTML=`<div class="sclist">${sorted.map((p,i)=>{
+    const gc=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    return`<div class="scrow ${gc} anim" style="animation-delay:${i*0.04}s">
+      <div class="scrk">${i+1}</div>
+      <div class="scav" style="background:${p.guest?'#d97706':col(p.idx)}">${ini(p.name)}</div>
+      <div class="scinfo">
+        <div class="scname">${p.name}${p.guest?'<span style="font-size:9px;background:#fff3e0;color:#d97706;padding:1px 5px;border-radius:8px;margin-left:5px;font-weight:800">Guest</span>':''}</div>
+        <div class="scmeta">#${p.number} · ${fp2(p.position)}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="scg">${p.filteredGoals}</div>
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">${activeGoalFilter==='all'?'total':activeGoalFilter}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// GUEST PLAYERS
+function addGuest(){
+  const name=document.getElementById('gp-name').value.trim();
+  if(!name)return alert('Enter a name!');
+  const pos=document.getElementById('gp-pos').value;
+  const team=document.getElementById('gp-team').value.trim();
+  // Check not already in squad
+  if(players.find(p=>p.name.toLowerCase()===name.toLowerCase())){
+    return alert(name+' is already in the squad!');
+  }
+  players.push({
+    name,
+    number:'G',
+    position:pos,
+    idx:players.length,
+    goals:0,
+    guest:true,
+    guestTeam:team||'Guest'
+  });
+  document.getElementById('gp-name').value='';
+  document.getElementById('gp-team').value='';
+  renderGuestList();
+  renderSquad();
+  // Refresh scorer pickers in any open game day panel
+  populateSels();
+  alert(name+' added as guest ✅');
+}
+
+function removeGuest(name){
+  if(!confirm('Remove '+name+' from the squad?'))return;
+  const idx=players.findIndex(p=>p.name===name&&p.guest);
+  if(idx>=0)players.splice(idx,1);
+  // Reindex
+  players.forEach((p,i)=>p.idx=i);
+  renderGuestList();
+  renderSquad();
+  renderStats();
+  alert(name+' removed ✅');
+}
+
+function renderGuestList(){
+  const guests=players.filter(p=>p.guest);
+  const el=document.getElementById('guest-list');
+  if(!el)return;
+  if(!guests.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0">No guest players added yet.</div>';
+    return;
+  }
+  el.innerHTML=guests.map(p=>`
+    <div style="background:var(--white);border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border-left:3px solid #d97706">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${p.name}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${fp2(p.position)} · ${p.guestTeam} · ${p.goals} goal${p.goals!==1?'s':''}</div>
+      </div>
+      <button onclick="removeGuest('${p.name}')" style="padding:4px 10px;background:var(--red-light);color:var(--red);border:1.5px solid var(--red);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Remove</button>
+    </div>`).join('');
+}
+
+// RESET FUNCTIONS
+function populateResetSels(){
+  const opts=fixtures.map(g=>`<option value="${g.id}">${fd(g.date)} — vs ${g.opponent} (${g.status})</option>`).join('');
+  ['reset-game-sel','reset-score-sel','status-game-sel'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=opts;
+  });
+  loadResetScorers(document.getElementById('reset-game-sel')?.value);
+  document.getElementById('reset-game-sel')?.addEventListener('change',function(){loadResetScorers(this.value);});
+}
+
+function loadResetScorers(id){
+  const g=fixtures.find(f=>f.id==id);
+  const el=document.getElementById('reset-scorers-list');
+  if(!el)return;
+  if(!g||!g.scorers||!g.scorers.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:6px 0">No goals logged for this game.</div>';
+    return;
+  }
+  const uniq={};g.scorers.forEach(s=>{uniq[s]=(uniq[s]||0)+1});
+  el.innerHTML=`<div style="background:var(--white);border-radius:10px;padding:10px;margin-bottom:4px">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Current scorers</div>
+    ${Object.entries(uniq).map(([name,count])=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--off)">
+        <span style="font-size:13px;font-weight:600">${name} <span style="color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">(${count})</span></span>
+        <button onclick="removeGoal(${g.id},'${name}')" style="padding:4px 10px;background:var(--red-light);color:var(--red);border:1.5px solid var(--red);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Remove 1</button>
+      </div>`).join('')}
+    <div style="margin-top:8px">
+      <button onclick="removeAllGoals(${g.id})" style="width:100%;padding:8px;background:var(--off);color:var(--text2);border:1.5px solid var(--gray);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Remove ALL goals from this game</button>
+    </div>
+  </div>`;
+}
+
+function removeGoal(id, name){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  if(!confirm('Remove 1 goal by '+name+'?'))return;
+  const idx=g.scorers.lastIndexOf(name);
+  if(idx>=0){
+    g.scorers.splice(idx,1);
+    g.score_us=Math.max(0,(g.score_us||0)-1);
+  }
+  recompute();renderCal();renderHome();renderStats();renderSquad();
+  loadResetScorers(id);
+  alert('Goal removed ✅');
+}
+
+function removeAllGoals(id){
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  if(!confirm('Remove ALL goals from '+g.opponent+' game? This cannot be undone.'))return;
+  g.scorers=[];
+  g.score_us=0;
+  recompute();renderCal();renderHome();renderStats();renderSquad();
+  loadResetScorers(id);
+  alert('All goals removed ✅');
+}
+
+function resetScore(){
+  const id=document.getElementById('reset-score-sel').value;
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  if(!confirm('Reset '+g.opponent+' score to 0-0 and clear all scorers?'))return;
+  g.score_us=0;g.score_them=0;g.scorers=[];g.motm=null;g.status='upcoming';
+  recompute();renderCal();renderHome();renderStats();renderSquad();
+  alert('Game reset ✅');
+}
+
+function changeStatus(){
+  const id=document.getElementById('status-game-sel').value;
+  const status=document.getElementById('status-new').value;
+  const g=fixtures.find(f=>f.id==id);if(!g)return;
+  if(!confirm('Change '+g.opponent+' game status to "'+status+'"?'))return;
+  g.status=status;
+  renderCal();renderHome();
+  alert('Status updated ✅');
+}
+
+// INIT
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+renderHome();renderSquad();renderStats();renderCal();renderFines();
+</script>
+</body>
+</html>
