@@ -397,8 +397,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 <script>
 // ── SUPABASE CONFIG ──
-const SB_URL =  + SUPABASE_URL + ;
-const SB_KEY =  + SUPABASE_KEY + ;
+const SB_URL = 'https://xwoebljxxqtedxyecfwu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3b2VibGp4eHF0ZWR4eWVjZnd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTE4MzcsImV4cCI6MjA4OTM4NzgzN30.Ydi0YdODrEcs90PkgnhGZR9rbH6O65uKo5ocvRNajLs';
 
 async function sbFetch(endpoint, options={}) {
   const res = await fetch(SB_URL + '/rest/v1/' + endpoint, {
