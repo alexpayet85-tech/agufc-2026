@@ -401,16 +401,17 @@ const SB_URL = 'https://xwoebljxxqtedxyecfwu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3b2VibGp4eHF0ZWR4eWVjZnd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTE4MzcsImV4cCI6MjA4OTM4NzgzN30.Ydi0YdODrEcs90PkgnhGZR9rbH6O65uKo5ocvRNajLs';
 
 async function sbFetch(endpoint, options={}) {
-  const res = await fetch(SB_URL + '/rest/v1/' + endpoint, {
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || 'return=representation',
-      ...options.headers
-    },
-    ...options
-  });
+  const url = SB_URL + '/rest/v1/' + endpoint;
+  const headers = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': options.prefer || 'return=representation'
+  };
+  if(options.headers) Object.assign(headers, options.headers);
+  const fetchOpts = {method: options.method || 'GET', headers};
+  if(options.body) fetchOpts.body = options.body;
+  const res = await fetch(url, fetchOpts);
   if (!res.ok) {
     const err = await res.text();
     throw new Error(err);
@@ -525,7 +526,9 @@ async function loadAll() {
 
   } catch(err) {
     console.error('Load error:', err);
-    document.querySelector('.loading-sub').textContent = 'Connection error — check your network';
+    document.querySelector('.loading-sub').textContent = 'Error: ' + err.message;
+    // Show a retry button
+    document.querySelector('.loading-bar').innerHTML = '<button onclick="loadAll()" style="padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px">Retry</button>';
   }
 }
 
