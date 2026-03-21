@@ -819,13 +819,12 @@ function dlICS(id){
     'END:VEVENT',
     'END:VCALENDAR'
   ];
-  const ics=lines.join('
-');
+  const ics=lines.join('\r\n');
   const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;
-  a.download='AGUFC-vs-'+g.opponent.replace(/\s+/g,'-')+'.ics';
+  a.download='AGUFC-vs-'+g.opponent.replace(/ /g,'-')+'.ics';
   document.body.appendChild(a);
   a.click();
   setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
