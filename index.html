@@ -851,6 +851,20 @@ function openCoachGame(id){
 function showOverlay(){
   document.getElementById('overlay').classList.add('open');
   document.getElementById('sbtn').classList.add('spinning');
+  // Add event delegation for scorer buttons (only once)
+  if(!document.getElementById('overlay')._scorerDelegated) {
+    document.getElementById('overlay')._scorerDelegated = true;
+    document.getElementById('overlay').addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-action="score"]');
+    if(btn) {
+      e.stopPropagation();
+      const fixId = isNaN(btn.dataset.fix) ? btn.dataset.fix : Number(btn.dataset.fix);
+      const pId = btn.dataset.pid ? (isNaN(btn.dataset.pid) ? btn.dataset.pid : Number(btn.dataset.pid)) : null;
+      const pName = btn.dataset.pname;
+      assignG(fixId, pId, pName);
+    }
+  });
+  }
   if(!unlocked)showPin();else showAdmin();
 }
 function closeCoach(){
@@ -939,7 +953,7 @@ async function loadGD(id){
     </div>
     <div id="sp${g.id}" style="display:none;margin-bottom:12px">
       <p class="flbl">Who scored?</p>
-      <div class="pgrid">${allPlayers.map(p=>`<button class="pbtn${p.guest?' style="border-color:#d97706;color:#d97706"':''}" onclick="assignG(${JSON.stringify(g.id)},${JSON.stringify(p.id||p.name)},${JSON.stringify(p.name)})">${p.name}${p.guest?' 👤':''}</button>`).join('')}</div>
+      <div class="pgrid" id="pgrid${g.id}">${allPlayers.map(p=>`<button class="pbtn" data-action="score" data-fix="${g.id}" data-pid="${p.id||''}" data-pname="${p.name}" data-guest="${p.guest||false}" style="${p.guest?'border-color:#d97706;color:#d97706':''}">${p.name}${p.guest?' 👤':''}</button>`).join('')}</div>
     </div>
     <div class="frow">
       <div><div class="flbl">Status</div><select id="gs${g.id}"><option value="upcoming"${g.status==='upcoming'?' selected':''}>Upcoming</option><option value="live"${g.status==='live'?' selected':''}>Live 🔴</option><option value="completed"${g.status==='completed'?' selected':''}>Completed</option></select></div>
