@@ -951,10 +951,7 @@ async function loadGD(id){
       <button class="lbtn lus" onclick="goalUs(${JSON.stringify(g.id)})">⚽ We Scored</button>
       <button class="lbtn lthem" onclick="goalThem(${JSON.stringify(g.id)})">😬 They Scored</button>
     </div>
-    <div id="sp${g.id}" style="display:none;margin-bottom:12px">
-      <p class="flbl">Who scored?</p>
-      <div class="pgrid" id="pgrid${g.id}">${allPlayers.map(p=>`<button class="pbtn" data-action="score" data-fix="${g.id}" data-pid="${p.id||''}" data-pname="${p.name}" data-guest="${p.guest||false}" style="${p.guest?'border-color:#d97706;color:#d97706':''}">${p.name}${p.guest?' 👤':''}</button>`).join('')}</div>
-    </div>
+    <!-- scorer picker moved to modal -->
     <div class="frow">
       <div><div class="flbl">Status</div><select id="gs${g.id}"><option value="upcoming"${g.status==='upcoming'?' selected':''}>Upcoming</option><option value="live"${g.status==='live'?' selected':''}>Live 🔴</option><option value="completed"${g.status==='completed'?' selected':''}>Completed</option></select></div>
       <div><div class="flbl">MOTM</div><select id="gm${g.id}"><option value="">— None —</option>${players.map(p=>`<option value="${p.id}"${g.motm_id===p.id?' selected':''}>  ${p.name}</option>`).join('')}</select></div>
@@ -979,8 +976,32 @@ async function loadGD(id){
 }
 
 function goalUs(id){
-  const picker = document.getElementById('sp'+id);
-  if(picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+  currentScoringGame = id;
+  const modal = document.getElementById('scorer-modal');
+  const grid = document.getElementById('scorer-modal-grid');
+  const allPlayers = [...players, ...guestPlayers];
+  grid.innerHTML = allPlayers.map(p => {
+    const style = p.guest 
+      ? 'padding:10px 16px;font-size:14px;border:2px solid #d97706;border-radius:25px;background:transparent;cursor:pointer;color:#d97706;font-family:Barlow,sans-serif;font-weight:600'
+      : 'padding:10px 16px;font-size:14px;border:2px solid #e4e4e4;border-radius:25px;background:transparent;cursor:pointer;color:#111;font-family:Barlow,sans-serif;font-weight:600';
+    return `<button style="${style}" onclick="pickScorer(${p.id||0},'${p.name.replace(/'/g,"\'")}',${p.guest||false})">${p.name}${p.guest?' 👤':''}</button>`;
+  }).join('');
+  modal.style.display = 'flex';
+}
+
+let currentScoringGame = null;
+
+function closeScorerModal(){
+  document.getElementById('scorer-modal').style.display = 'none';
+  currentScoringGame = null;
+}
+
+function pickScorer(playerId, playerName, isGuest){
+  document.getElementById('scorer-modal').style.display = 'none';
+  if(currentScoringGame !== null){
+    assignG(currentScoringGame, playerId || playerName, playerName);
+    currentScoringGame = null;
+  }
 }
 
 async function goalThem(id){
@@ -1367,5 +1388,17 @@ function checkAndPoll() {
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 loadAll();
 </script>
+
+<!-- SCORER MODAL -->
+<div id="scorer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:flex-end;justify-content:center">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:680px;padding:20px 18px 32px;max-height:70vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase">⚽ Who scored?</div>
+      <button onclick="closeScorerModal()" style="width:30px;height:30px;border-radius:50%;background:#f4f4f4;border:none;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div id="scorer-modal-grid" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+</div>
+
 </body>
 </html>
