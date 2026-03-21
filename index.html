@@ -913,8 +913,18 @@ function populateSels(){
 }
 
 // ── GAME DAY ──
-function loadGD(id){
+async function loadGD(id){
   const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
+  // Always refresh scorers from DB
+  if(!g.local){
+    try{
+      const gData=await sb.get('goals',`fixture_id=eq.${id}&select=*,players(name)`);
+      g.scorers=(gData||[]).map(x=>x.players?.name||'').filter(Boolean);
+      // Also refresh scores
+      const fData=await sb.get('fixtures',`id=eq.${id}`);
+      if(fData&&fData[0]){g.score_us=fData[0].score_us;g.score_them=fData[0].score_them;g.status=fData[0].status;g.motm_id=fData[0].motm_id;}
+    }catch(e){console.error('Refresh error:',e);}
+  }
   const allPlayers=[...players,...guestPlayers];
   const pOpts=allPlayers.map(p=>`<option value="${p.id||p.name}">${p.name}</option>`).join('');
   document.getElementById('gd-panel').innerHTML=`
@@ -954,7 +964,10 @@ function loadGD(id){
     </div>`;
 }
 
-function goalUs(id){document.getElementById('sp'+id).style.display='block';}
+function goalUs(id){
+  const picker = document.getElementById('sp'+id);
+  if(picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+}
 
 async function goalThem(id){
   const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
