@@ -352,7 +352,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
           <button class="ctab" onclick="setCT('schedule')">Schedule</button>
           <button class="ctab" onclick="setCT('players')">Players</button>
           <button class="ctab" onclick="setCT('guest')">👤 Guest</button>
-          <button class="ctab" onclick="setCT('reset')">↩ Reset</button>
         </div>
         <div class="csec vis" id="ct-gameday">
           <div class="frow1"><div><div class="flbl">Select game</div><select id="gd-sel" onchange="loadGD(this.value)"></select></div></div>
@@ -378,26 +377,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
           <div style="height:1px;background:var(--gray);margin:14px 0"></div>
           <p class="flbl">Current guests</p>
           <div id="guest-list" style="margin-top:8px"></div>
-        </div>
-        <div class="csec" id="ct-reset">
-          <div style="background:var(--off);border-radius:12px;padding:14px;margin-bottom:12px;border-left:3px solid var(--red)">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:4px">⚠️ Danger Zone</div>
-            <div style="font-size:12px;color:var(--text3);line-height:1.5">These actions cannot be undone.</div>
-          </div>
-          <p class="flbl">Remove last goal from a game</p>
-          <select id="reset-game-sel" style="margin-bottom:8px"></select>
-          <div id="reset-scorers-list" style="margin-bottom:8px"></div>
-          <div style="height:1px;background:var(--gray);margin:14px 0"></div>
-          <p class="flbl">Reset a game score to 0–0</p>
-          <select id="reset-score-sel" style="margin-bottom:8px"></select>
-          <button class="btn" style="background:#d97706;margin-bottom:14px" onclick="resetScore()">Reset Score to 0–0</button>
-          <div style="height:1px;background:var(--gray);margin-bottom:14px"></div>
-          <p class="flbl">Change game status</p>
-          <div class="frow" style="margin-bottom:8px">
-            <select id="status-game-sel"></select>
-            <select id="status-new"><option value="upcoming">Upcoming</option><option value="live">Live 🔴</option><option value="completed">Completed</option></select>
-          </div>
-          <button class="btn btn-blk" onclick="changeStatus()">Update Status</button>
         </div>
       </div>
     </div>
@@ -923,15 +902,13 @@ function showAdmin(){
   }
 }
 function setCT(t){
-  document.querySelectorAll('.ctab').forEach((b,i)=>b.classList.toggle('on',['gameday','schedule','players','guest','reset'][i]===t));
+  document.querySelectorAll('.ctab').forEach((b,i)=>b.classList.toggle('on',['gameday','schedule','players','guest'][i]===t));
   document.querySelectorAll('.csec').forEach(s=>s.classList.remove('vis'));
   document.getElementById('ct-'+t).classList.add('vis');
-  if(t==='reset')populateResetSels();
   if(t==='guest')renderGuestList();
 }
 function populateSels(){
-  const dbFixtures=fixtures.filter(f=>!f.local);
-  const opts=dbFixtures.map(g=>`<option value="${g.id}">${fd(g.date)} — vs ${g.opponent} (${g.status})</option>`).join('');
+  const opts=fixtures.map(g=>`<option value="${g.id}">${fd(g.date)} — vs ${g.opponent} (${g.status})</option>`).join('');
   ['gd-sel','sc-sel'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
 }
 
@@ -960,7 +937,21 @@ function loadGD(id){
     </div>
     <div class="frow1"><div><div class="flbl">Match report 🎙️</div><textarea id="gr${g.id}" rows="4">${g.report||''}</textarea></div></div>
     <button class="btn" onclick="saveG(${JSON.stringify(g.id)})">Save ✓</button>
-    <button class="btn btn-blk" style="margin-top:6px" onclick="closeCoach()">Done</button>`;
+    <button class="btn btn-blk" style="margin-top:6px" onclick="closeCoach()">Done</button>
+    <div style="height:1px;background:var(--gray);margin:14px 0"></div>
+    <div style="background:var(--off);border-radius:10px;padding:12px;margin-bottom:10px;border-left:3px solid var(--red)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:8px">⚠️ Corrections</div>
+      ${g.scorers&&g.scorers.length?`
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Remove a goal:</p>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+          ${Object.entries(g.scorers.reduce((a,s)=>{a[s]=(a[s]||0)+1;return a},{})).map(([name,count])=>`
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--white);padding:8px 10px;border-radius:8px">
+              <span style="font-size:13px;font-weight:600">${name} <span style="color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800">(${count})</span></span>
+              <button onclick="removeGoalInline(${JSON.stringify(g.id)},'${name}')" style="padding:4px 10px;background:var(--red-light);color:var(--red);border:1.5px solid var(--red);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Remove 1</button>
+            </div>`).join('')}
+        </div>` : '<p style="font-size:11px;color:var(--text3);margin-bottom:10px">No goals logged yet.</p>'}
+      <button onclick="resetGameInline(${JSON.stringify(g.id)})" style="width:100%;padding:9px;background:#d97706;color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;cursor:pointer">Reset Score to 0–0</button>
+    </div>`;
 }
 
 function goalUs(id){document.getElementById('sp'+id).style.display='block';}
@@ -1154,6 +1145,43 @@ async function confirmRemovePlayer(playerId, playerName) {
   document.getElementById('player-overlay').classList.remove('open');
   renderSquad();
   toast(playerName + ' removed');
+}
+
+
+// ── INLINE RESET FUNCTIONS ──
+async function removeGoalInline(id, name){
+  const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
+  if(!confirm('Remove 1 goal by '+name+'?'))return;
+  const idx=g.scorers.lastIndexOf(name);
+  if(idx>=0)g.scorers.splice(idx,1);
+  g.score_us=Math.max(0,(g.score_us||0)-1);
+  const p=players.find(x=>x.name===name);if(p&&p.goals>0)p.goals--;
+  try{
+    const goalRecs=await sb.get('goals',`fixture_id=eq.${id}&player_id=eq.${players.find(x=>x.name===name)?.id}&limit=1&order=id.desc`);
+    if(goalRecs&&goalRecs[0])await sb.delete('goals',`id=eq.${goalRecs[0].id}`);
+    await sb.patch('fixtures',`id=eq.${id}`,{score_us:g.score_us});
+    toast('Goal removed ✅');
+  }catch(e){toast('Error ❌');console.error(e);}
+  renderCal();renderHome();renderStats();renderSquad();
+  // Reload game day panel
+  loadGD(id);
+}
+
+async function resetGameInline(id){
+  const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
+  if(!confirm('Reset '+g.opponent+' score to 0-0 and clear all goals?'))return;
+  g.scorers=[];g.score_us=0;g.score_them=0;g.status='upcoming';
+  try{
+    await sb.delete('goals',`fixture_id=eq.${id}`);
+    await sb.patch('fixtures',`id=eq.${id}`,{score_us:0,score_them:0,status:'upcoming',motm_id:null});
+    toast('Game reset ✅');
+  }catch(e){toast('Error ❌');console.error(e);}
+  players.forEach(p=>p.goals=0);
+  fixtures.filter(f=>f.status==='completed').forEach(f=>{
+    (f.scorers||[]).forEach(name=>{const p=players.find(x=>x.name===name);if(p)p.goals++;});
+  });
+  renderCal();renderHome();renderStats();renderSquad();
+  loadGD(id);
 }
 
 // ── GUEST PLAYERS ──
