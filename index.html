@@ -641,7 +641,7 @@ function renderHome(){
               <span class="pill pgray" style="font-size:9px">${nxt.type}</span>
             </div>
           </div>
-          <button class="next-gear-btn" onclick="openCoachGame(${JSON.stringify(nxt.id)})" title="Edit fixture">
+          <button class="next-gear-btn" onclick="openCoachGame(${typeof nxt.id === 'number' ? nxt.id : JSON.stringify(nxt.id)})" title="Edit fixture">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
         </div>
@@ -787,7 +787,7 @@ function buildGCard(g){
   } else {
     badge=`<span class="pill pgray" style="font-size:9px">Upcoming</span>`;
   }
-  const gid=JSON.stringify(g.id);
+  const gid = typeof g.id === 'number' ? g.id : JSON.stringify(g.id);
   const gear=`<button class="gearbtn" onclick="event.stopPropagation();event.preventDefault();openCoachGame(${gid})">${gearSVG()}</button>`;
   const icsBtn=!done&&!live?`<div class="calbtns"><button class="calbtn" onclick="dlICS(${gid})">📅 Add to calendar</button></div>`:'';
   const reportH=hasR?`<div class="rtoggle" onclick="toggleR(this)"><span class="rtlbl">Match Report</span><div class="rchev">${chevSVG()}</div></div><div class="rbody"><div class="rinner"><div class="rrule"></div>${g.report.split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')}</div></div>`:'';
@@ -842,9 +842,11 @@ function renderFines(){
 // ── COACH PIN ──
 function openCoach(){tgtGame=null;showOverlay();}
 function openCoachGame(id){
-  // Convert to number if possible
-  tgtGame = isNaN(id) ? id : Number(id);
-  showOverlay();
+  tgtGame = (id !== null && id !== undefined && !isNaN(id)) ? Number(id) : id;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sbtn').classList.add('spinning');
+  if(!unlocked) showPin();
+  else showAdmin();
 }
 function showOverlay(){
   document.getElementById('overlay').classList.add('open');
