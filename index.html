@@ -257,6 +257,18 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 .anim{animation:fadeUp .2s ease both}
 @keyframes spinG{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 #sbtn.spinning svg{animation:spinG .7s linear infinite}
+
+/* KEYBOARD FIX */
+.overlay.open { align-items: flex-start; padding-top: env(safe-area-inset-top); }
+.sheet { max-height: 95vh; border-radius: 0 0 20px 20px; margin-top: auto; border-radius: 20px 20px 0 0; }
+@media (max-height: 600px) {
+  .sheet { max-height: 100vh; border-radius: 0; }
+}
+
+.squad-gear{width:26px;height:26px;border-radius:50%;background:var(--off);border:1.5px solid var(--gray);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;padding:0}
+.squad-gear:hover{border-color:var(--red);background:var(--red-light)}
+.squad-gear svg{width:12px;height:12px;color:var(--text3);transition:transform .4s}
+.squad-gear:hover svg{color:var(--red);transform:rotate(60deg)}
 </style>
 </head>
 <body>
@@ -392,10 +404,32 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
   </div>
 </div>
 
+
+<!-- PLAYER EDIT OVERLAY -->
+<div class="overlay" id="player-overlay" onclick="closePlayerEdit(event)">
+  <div class="sheet">
+    <div class="shandle"></div>
+    <div class="sinner">
+      <div class="stlbl">✏️ Edit Player <button class="closex" onclick="document.getElementById('player-overlay').classList.remove('open')">✕</button></div>
+      <div id="player-edit-content"></div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+
+// Auto scroll inputs into view when keyboard appears
+document.addEventListener('focusin', function(e) {
+  if(e.target.matches('input,select,textarea')) {
+    setTimeout(() => {
+      e.target.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 300);
+  }
+});
+
 // ── SUPABASE CONFIG ──
 const SB_URL = 'https://xwoebljxxqtedxyecfwu.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3b2VibGp4eHF0ZWR4eWVjZnd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MTE4MzcsImV4cCI6MjA4OTM4NzgzN30.Ydi0YdODrEcs90PkgnhGZR9rbH6O65uKo5ocvRNajLs';
@@ -449,13 +483,21 @@ let activeGoalFilter='all', apf='All';
 // ── LOAD DATA ──
 async function loadAll() {
   try {
-    const [pData, fData, gData, stData, setData] = await Promise.all([
-      sb.get('players', 'order=number'),
-      sb.get('fixtures', 'order=date'),
-      sb.get('goals', 'select=*,players(name,position,number)'),
-      sb.get('standings', 'order=points.desc'),
-      sb.get('settings')
-    ]);
+    // Load sequentially so we can pinpoint which table fails
+    document.querySelector('.loading-sub').textContent = 'Loading players...';
+    const pData = await sb.get('players', 'order=number');
+    
+    document.querySelector('.loading-sub').textContent = 'Loading fixtures...';
+    const fData = await sb.get('fixtures', 'order=date');
+    
+    document.querySelector('.loading-sub').textContent = 'Loading goals...';
+    const gData = await sb.get('goals', 'select=*,players(name,position,number)');
+    
+    document.querySelector('.loading-sub').textContent = 'Loading standings...';
+    const stData = await sb.get('standings', 'order=points.desc');
+    
+    document.querySelector('.loading-sub').textContent = 'Loading settings...';
+    const setData = await sb.get('settings');
 
     // Players
     players = (pData||[]).map((p,i) => ({
@@ -523,6 +565,7 @@ async function loadAll() {
     renderStats();
     renderCal();
     renderFines();
+    checkAndPoll();
 
   } catch(err) {
     console.error('Load error:', err);
@@ -745,7 +788,7 @@ function buildGCard(g){
     badge=`<span class="pill pgray" style="font-size:9px">Upcoming</span>`;
   }
   const gid=JSON.stringify(g.id);
-  const gear=`<button class="gearbtn" onclick="event.stopPropagation();openCoachGame(${gid})">${gearSVG()}</button>`;
+  const gear=`<button class="gearbtn" onclick="event.stopPropagation();event.preventDefault();openCoachGame(${gid})">${gearSVG()}</button>`;
   const icsBtn=!done&&!live?`<div class="calbtns"><button class="calbtn" onclick="dlICS(${gid})">📅 Add to calendar</button></div>`:'';
   const reportH=hasR?`<div class="rtoggle" onclick="toggleR(this)"><span class="rtlbl">Match Report</span><div class="rchev">${chevSVG()}</div></div><div class="rbody"><div class="rinner"><div class="rrule"></div>${g.report.split('\n').filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('')}</div></div>`:'';
   const bodyH=(done&&(scStr||hasR))?`<div class="gbody">${scStr?`<div class="gscorers">⚽ ${scStr}</div>`:''}${reportH}</div>`:((!done&&!live)?`<div class="gbody">${icsBtn}</div>`:'');
@@ -798,7 +841,11 @@ function renderFines(){
 
 // ── COACH PIN ──
 function openCoach(){tgtGame=null;showOverlay();}
-function openCoachGame(id){tgtGame=id;showOverlay();}
+function openCoachGame(id){
+  // Convert to number if possible
+  tgtGame = isNaN(id) ? id : Number(id);
+  showOverlay();
+}
 function showOverlay(){
   document.getElementById('overlay').classList.add('open');
   document.getElementById('sbtn').classList.add('spinning');
@@ -837,6 +884,14 @@ function checkPin(){
 function showAdmin(){
   document.getElementById('pin-view').style.display='none';
   document.getElementById('admin-view').style.display='block';
+  // Check if we came from player edit
+  if(tgtPlayerEdit) {
+    closeCoach();
+    const {playerId, playerName, isGuest} = tgtPlayerEdit;
+    tgtPlayerEdit = null;
+    showPlayerEdit(playerId, playerName, isGuest);
+    return;
+  }
   populateSels();
   if(tgtGame!=null){
     const g=fixtures.find(f=>f.id===tgtGame||f.id==tgtGame);
@@ -898,6 +953,7 @@ async function goalThem(id){
   if(ls)ls.innerHTML=`<span>${g.score_us||0}</span> – ${g.score_them}`;
   refreshCard(id);renderHome();
   toast('Score updated ✅');
+  startLivePoll();
 }
 
 async function assignG(id, playerId, playerName){
@@ -994,6 +1050,87 @@ async function addPlayer(){
       renderSquad();toast(name+' added ✅');
     }
   }catch(e){toast('Failed ❌');console.error(e);}
+}
+
+
+// ── PLAYER EDIT ──
+function openPlayerEdit(playerId, playerName, isGuest) {
+  if(!unlocked) {
+    // Need PIN first
+    tgtGame = null;
+    tgtPlayerEdit = {playerId, playerName, isGuest};
+    showOverlay();
+    return;
+  }
+  showPlayerEdit(playerId, playerName, isGuest);
+}
+
+let tgtPlayerEdit = null;
+
+function showPlayerEdit(playerId, playerName, isGuest) {
+  const p = isGuest
+    ? guestPlayers.find(x => x.name === playerName)
+    : players.find(x => x.id === playerId || x.name === playerName);
+  if(!p) return;
+
+  document.getElementById('player-overlay').classList.add('open');
+  document.getElementById('player-edit-content').innerHTML = `
+    <div class="frow">
+      <div><div class="flbl">Name</div><input id="pe-name" value="${p.name}"></div>
+      <div><div class="flbl">Jersey #</div><input id="pe-num" type="number" value="${p.number||''}"></div>
+    </div>
+    <div class="frow1"><div><div class="flbl">Position</div>
+      <select id="pe-pos">
+        <option${p.position==='Goalkeeper'?' selected':''}>Goalkeeper</option>
+        <option${p.position==='Defender'?' selected':''}>Defender</option>
+        <option${p.position==='Midfielder'?' selected':''}>Midfielder</option>
+        <option${p.position==='Forward'?' selected':''}>Forward</option>
+      </select>
+    </div></div>
+    <div class="frow1"><div><div class="flbl">Goals (manual adjust)</div><input id="pe-goals" type="number" value="${p.goals||0}" min="0"></div></div>
+    <button class="btn" onclick="savePlayerEdit(${JSON.stringify(playerId)},${JSON.stringify(playerName)},${isGuest})">Save Changes ✓</button>
+    ${!isGuest ? `<button class="btn btn-blk" style="margin-top:6px" onclick="confirmRemovePlayer(${JSON.stringify(playerId)},${JSON.stringify(playerName)})">Remove from Squad</button>` : ''}
+  `;
+}
+
+function closePlayerEdit(e) {
+  if(e.target === document.getElementById('player-overlay'))
+    document.getElementById('player-overlay').classList.remove('open');
+}
+
+async function savePlayerEdit(playerId, playerName, isGuest) {
+  const name = document.getElementById('pe-name').value.trim();
+  const number = parseInt(document.getElementById('pe-num').value)||0;
+  const position = document.getElementById('pe-pos').value;
+  const goals = parseInt(document.getElementById('pe-goals').value)||0;
+
+  if(isGuest) {
+    const p = guestPlayers.find(x => x.name === playerName);
+    if(p) { p.name=name; p.number=number; p.position=position; p.goals=goals; }
+  } else {
+    const p = players.find(x => x.id === playerId || x.name === playerName);
+    if(p) { p.name=name; p.number=number; p.position=position; p.goals=goals; }
+    try {
+      await sb.patch('players', `id=eq.${playerId}`, {name, number, position});
+    } catch(e) { console.error(e); }
+  }
+
+  document.getElementById('player-overlay').classList.remove('open');
+  renderSquad();
+  renderGoldenBoot();
+  toast(name + ' updated ✅');
+}
+
+async function confirmRemovePlayer(playerId, playerName) {
+  if(!confirm('Remove ' + playerName + ' from the squad?')) return;
+  const idx = players.findIndex(x => x.id === playerId);
+  if(idx >= 0) players.splice(idx, 1);
+  try {
+    await sb.delete('players', `id=eq.${playerId}`);
+  } catch(e) { console.error(e); }
+  document.getElementById('player-overlay').classList.remove('open');
+  renderSquad();
+  toast(playerName + ' removed');
 }
 
 // ── GUEST PLAYERS ──
@@ -1096,6 +1233,56 @@ async function changeStatus(){
     toast('Status updated ✅');
   }catch(e){toast('Error ❌');console.error(e);}
   renderCal();renderHome();
+}
+
+
+// ── LIVE POLLING ──
+let pollInterval = null;
+
+function startLivePoll() {
+  if(pollInterval) return;
+  pollInterval = setInterval(async () => {
+    const liveGame = fixtures.find(f => f.status === 'live');
+    if(!liveGame) { stopLivePoll(); return; }
+    try {
+      const [fData, gData] = await Promise.all([
+        sb.get('fixtures', `id=eq.${liveGame.id}`),
+        sb.get('goals', `fixture_id=eq.${liveGame.id}&select=*,players(name)`)
+      ]);
+      if(fData && fData[0]) {
+        const f = fData[0];
+        const prev_us = liveGame.score_us;
+        const prev_them = liveGame.score_them;
+        liveGame.score_us = f.score_us;
+        liveGame.score_them = f.score_them;
+        liveGame.status = f.status;
+        liveGame.scorers = (gData||[]).map(g => g.players?.name || '').filter(Boolean);
+        // Only re-render if score changed
+        if(prev_us !== f.score_us || prev_them !== f.score_them) {
+          renderHome();
+          refreshCard(liveGame.id);
+          // Recompute goals
+          players.forEach(p => p.goals = 0);
+          fixtures.filter(f => f.status === 'completed' || f.status === 'live').forEach(g => {
+            (g.scorers||[]).forEach(name => {
+              const p = players.find(x => x.name === name);
+              if(p) p.goals++;
+            });
+          });
+          renderGoldenBoot();
+        }
+      }
+    } catch(e) { console.log('Poll error:', e); }
+  }, 15000); // every 15 seconds
+}
+
+function stopLivePoll() {
+  if(pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+}
+
+// Check if any live games on load and start polling
+function checkAndPoll() {
+  if(fixtures.find(f => f.status === 'live')) startLivePoll();
 }
 
 // ── INIT ──
