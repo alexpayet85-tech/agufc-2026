@@ -980,12 +980,15 @@ function goalUs(id){
   const modal = document.getElementById('scorer-modal');
   const grid = document.getElementById('scorer-modal-grid');
   const allPlayers = [...players, ...guestPlayers];
-  grid.innerHTML = allPlayers.map(p => {
-    const style = p.guest 
-      ? 'padding:10px 16px;font-size:14px;border:2px solid #d97706;border-radius:25px;background:transparent;cursor:pointer;color:#d97706;font-family:Barlow,sans-serif;font-weight:600'
-      : 'padding:10px 16px;font-size:14px;border:2px solid #e4e4e4;border-radius:25px;background:transparent;cursor:pointer;color:#111;font-family:Barlow,sans-serif;font-weight:600';
-    return `<button style="${style}" onclick="pickScorer(${p.id||0},'${p.name.replace(/'/g,"\'")}',${p.guest||false})">${p.name}${p.guest?' 👤':''}</button>`;
-  }).join('');
+  window._sp = allPlayers;
+  let btns = '';
+  for(let i=0; i<allPlayers.length; i++){
+    const p = allPlayers[i];
+    const col = p.guest ? '#d97706' : '#111';
+    const brd = p.guest ? '#d97706' : '#e4e4e4';
+    btns += '<button onclick="pickScorer(' + i + ')" style="padding:10px 16px;font-size:14px;border:2px solid ' + brd + ';border-radius:25px;background:transparent;cursor:pointer;color:' + col + ';font-family:Barlow,sans-serif;font-weight:600;margin:3px">' + p.name + (p.guest?' 👤':'') + '</button>';
+  }
+  grid.innerHTML = btns;
   modal.style.display = 'flex';
 }
 
@@ -996,13 +999,17 @@ function closeScorerModal(){
   currentScoringGame = null;
 }
 
-function pickScorer(playerId, playerName, isGuest){
+function pickScorer(i){
+  const p = window._sp[i];
+  if(!p){ return; }
   document.getElementById('scorer-modal').style.display = 'none';
-  if(currentScoringGame !== null){
-    assignG(currentScoringGame, playerId || playerName, playerName);
-    currentScoringGame = null;
+  const gid = currentScoringGame;
+  currentScoringGame = null;
+  if(gid !== null && gid !== undefined){
+    assignG(gid, p.id || 0, p.name);
   }
 }
+
 
 async function goalThem(id){
   const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
