@@ -1019,24 +1019,27 @@ async function goalThem(id){
 }
 
 async function assignG(id, playerId, playerName){
-  const g=fixtures.find(f=>f.id===id||f.id==id);if(!g)return;
-  g.score_us=(g.score_us||0)+1;
-  g.scorers=g.scorers||[];
+  // Normalise id
+  const numId = isNaN(id) ? id : Number(id);
+  const g = fixtures.find(f => f.id === numId || f.id == id);
+  if(!g){ toast('Game not found ❌'); return; }
+  g.score_us = (g.score_us||0) + 1;
+  g.scorers = g.scorers||[];
   g.scorers.push(playerName);
-  g.status='live';
-  const p=players.find(x=>x.id===playerId||x.name===playerName)||guestPlayers.find(x=>x.name===playerName);
-  if(p)p.goals++;
+  g.status = 'live';
+  const p = players.find(x=>x.id===playerId||x.name===playerName) || guestPlayers.find(x=>x.name===playerName);
+  if(p) p.goals++;
   try{
-    // Insert goal record
-    if(typeof playerId==='number'){
-      await sb.post('goals',{fixture_id:id, player_id:playerId});
+    if(typeof playerId === 'number' && playerId > 0){
+      await sb.post('goals', {fixture_id: numId, player_id: playerId});
     }
-    await sb.patch('fixtures',`id=eq.${id}`,{score_us:g.score_us,status:'live'});
-  }catch(e){console.error(e);}
-  document.getElementById('sp'+id).style.display='none';
-  const ls=document.getElementById('ls'+id);
-  if(ls)ls.innerHTML=`<span>${g.score_us}</span> – ${g.score_them||0}`;
-  refreshCard(id);renderHome();renderSquad();renderGoldenBoot();
+    await sb.patch('fixtures', `id=eq.${numId}`, {score_us: g.score_us, status: 'live'});
+    toast('⚽ Goal! ' + playerName);
+  } catch(e){ toast('Save error ❌'); console.error(e); }
+  // Update live scoreboard if open
+  const ls = document.getElementById('ls'+id);
+  if(ls) ls.innerHTML = `<span>${g.score_us}</span> – ${g.score_them||0}`;
+  refreshCard(numId); renderHome();renderSquad();renderGoldenBoot();
   toast(`⚽ Goal! ${playerName}`);
 }
 
